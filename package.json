@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "test:unit": "vitest run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check":"astro check"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
