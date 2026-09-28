@@ -14,13 +14,13 @@ export async function getStaticPaths() {
 }
 type Props = {
 	post: CollectionEntry<'blog'>;
-	author: CollectionEntry<'authors'>;
+	author?: CollectionEntry<'authors'>;
 };
 
 const { post, author } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BlogPost {...post.data} author={author.data}>
+<BlogPost {...post.data} author={author?.data}>
 	<Content />
 </BlogPost>
