@@ -12,7 +12,7 @@
     "astro": "astro",
     "test:unit": "vitest run",
     "lint": "eslint .",
-    "check":"astro check"
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
@@ -25,9 +25,12 @@
     "esbuild": true
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "eslint": "^10.11.0",
     "eslint-plugin-astro": "^3.2.1",
     "jiti": "^2.7.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.0",
     "vitest": "^5.0.1"
   }
 }
