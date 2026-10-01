@@ -18,6 +18,12 @@ export class StaticSiteStack extends cdk.Stack {
       defaultRootObject: 'index.html',
     });
    
+     //this is for solving site url visibility after deployment
+    new cdk.CfnOutput(this, 'AstroSiteUrl', {
+      value: distribution.distributionDomainName,
+      description: 'The public URL of your Astro static site',
+    });
+
   new s3deploy.BucketDeployment(this, 'DeploySite', {
     sources: [s3deploy.Source.asset('./../dist')],
     destinationBucket: siteBucket,
