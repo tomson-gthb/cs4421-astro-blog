@@ -13,11 +13,42 @@ export class StaticSiteStack extends cdk.Stack {
       autoDeleteObjects: true,
     });
 
+    // CloudFront Function to append index.html to clean Astro directory URLs
+    const rewriteFunction = new cloudfront.Function(this, 'RewriteFunction', {
+      code: cloudfront.FunctionCode.fromInline(`
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+          
+          // Check whether the URI is missing a file extension.
+          if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+          } else if (!uri.includes('.')) {
+            request.uri += '/index.html';
+          }
+          
+          return request;
+        }
+      `),
+    });
+
+
     const distribution = new cloudfront.Distribution(this, 'SiteDistribution', {
-      defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket) },
+      defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
+	functionAssociations: [{
+          function: rewriteFunction,
+          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        }],
+	},
       defaultRootObject: 'index.html',
     });
    
+     //this is for solving site url visibility after deployment
+    new cdk.CfnOutput(this, 'AstroSiteUrl', {
+      value: distribution.distributionDomainName,
+      description: 'The public URL of your Astro static site',
+    });
+
   new s3deploy.BucketDeployment(this, 'DeploySite', {
     sources: [s3deploy.Source.asset('./../dist')],
     destinationBucket: siteBucket,
