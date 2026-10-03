@@ -36,6 +36,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-     - name: Deploy Infrastructure & Assets with AWS CDK
-       working-directory: ./hello-cdk
-       run: npx cdk deploy --require-approval never
+      - name: Deploy Infrastructure & Assets with AWS CDK
+        working-directory: ./hello-cdk
+        run: npx cdk deploy --require-approval never
