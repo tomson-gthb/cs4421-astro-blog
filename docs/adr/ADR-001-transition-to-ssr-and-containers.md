@@ -1,11 +1,17 @@
-# ADR-001: Transition from Static Site to Containerized SSR Runtime
-## Status: Accepted (Date: 2026-10-07)
+# ADR-OO1: Transition to server side rendering and containers
+
+## Status: 
+Accepted
+
 ## Context
-Our platform requires dynamic API endpoints (/api/health, /api/feedback).
-Static hosting on S3 cannot execute server-side Node.js code.
+Our Astro application previously used Static site generation we need dynamic server side capabilities , application observability
+(health probes), and containerized deployments.
+
 ## Decision
-We will configure Astro with the `@astrojs/node` adapter in standalone mode
-and package the application as a Docker container.
+we will transition Astro from static output to dynamic server side rendering('output: 'server') using '@astrojs/node'
+in standalone mode, and wrap the runtime in production container images.
+
 ## Consequences
-- Positive: Enables live API routes, dynamic rendering, and operational health checks.
-- Negative: Increases operational complexity; requires container compute runtime.
+- Positive: allows real time API endpoints(eg /api/health) dynamic rendering and , standard container orchestrator integration
+(aws app runner/ ECS)
+- Negative: Requires running node.js compute instances rather than serving static files directly from s3/cdn

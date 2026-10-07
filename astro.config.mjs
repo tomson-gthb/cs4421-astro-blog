@@ -9,7 +9,7 @@ import node from '@astrojs/node';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://example.com',
-  output: 'server', // enables on demand server rendering
+  output: 'server', 
   integrations: [mdx(), sitemap()],
 
   fonts: [
@@ -38,6 +38,6 @@ export default defineConfig({
 	],
 
   adapter: node({
-    mode: 'standalone',  //self contained http server listening on a port
+    mode: 'standalone', 
   }),
 });
