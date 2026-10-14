@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+
+const parks = await getCollection('parks');
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={`National Parks | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+        <style>
+            main { width: 960px; margin: auto; padding: 3em 1em; }
+            ul { display: flex; flex-wrap: wrap; gap: 2rem; list-style-type: none; margin: 0; padding: 0; }
+            ul li { width: calc(50% - 1rem); }
+            ul li img { margin-bottom: 0.5rem; border-radius: 12px; width: 100%; height: auto; object-fit: cover; }
+            ul li a { display: block; text-decoration: none; }
+            .title { margin: 0; color: rgb(var(--black)); font-size: 1.5rem; }
+            ul li a:hover h4 { color: rgb(var(--accent)); }
+            @media (max-width: 720px) {
+                ul li { width: 100%; }
+            }
+        </style>
+    </head>
+    <body>
+        <Header />
+        <main>
+            <section>
+                <ul>
+                    {parks.map((park) => (
+                        <li>
+                            <a href={`/parks/${park.id}/`}>
+                                {park.data.heroImage && (
+                                    <Image width={720} height={360} src={park.data.heroImage} alt="" />
+                                )}
+                                <h4 class="title">{park.data.title}</h4>
+                                {park.data.description && <p>{park.data.description}</p>}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </section>
+        </main>
+        <Footer />
+    </body>
+</html>
