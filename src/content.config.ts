@@ -2,37 +2,50 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const blog = defineCollection({
-	// Load Markdown and MDX files in the `src/content/blog/` directory.
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
-	// Type-check frontmatter using a schema
-	schema: ({ image }) =>
-		z.object({
-			title: z.string(),
-			description: z.string(),
-			// Transform string to Date object
-			pubDate: z.coerce.date(),
-			updatedDate: z.coerce.date().optional(),
-			heroImage: z.optional(image()),
-			author: z.string(),
-		}),
+const citiesAndRegions = defineCollection({
+    loader: glob({ base: './src/content/citiesAndRegions', pattern: '**/*.md' }),
+    schema: ({ image }) =>
+        z.object({
+            title: z.string(),
+            description: z.string().optional(),
+            heroImage: z.optional(image()),
+        }),
 });
 
-const authors = defineCollection({
-	loader: glob({ base: './src/content/authors', pattern: '**/*.md' }),
-	schema: ({ image }) =>
-		z.object({
-			name: z.string(),
-			bio: z.string(),
-			avatar: image(),
-			social: z
-				.object({
-					label: z.string(),
-						url: z.url(),
-				})
-				.array()
-				.default([]),
-		}),
+const islands = defineCollection({
+    loader: glob({ base: './src/content/islands', pattern: '**/*.md' }),
+    schema: ({ image }) =>
+        z.object({
+            title: z.string(),
+            description: z.string().optional(),
+            heroImage: z.optional(image()),
+        }),
 });
 
-export const collections = { blog, authors };
+const parks = defineCollection({
+    loader: glob({ base: './src/content/parks', pattern: '**/*.md' }),
+    schema: ({ image }) =>
+        z.object({
+            title: z.string(),
+            description: z.string().optional(),
+            heroImage: z.optional(image()),
+        }),
+});
+
+const sports = defineCollection({
+    loader: glob({ base: './src/content/sports', pattern: '**/*.md' }),
+    schema: ({ image }) =>
+        z.object({
+            title: z.string(),
+            description: z.string().optional(),
+            heroImage: z.optional(image()),
+        }),
+});
+
+
+export const collections = { 
+    citiesAndRegions, 
+    islands, 
+    parks, 
+    sports 
+};
