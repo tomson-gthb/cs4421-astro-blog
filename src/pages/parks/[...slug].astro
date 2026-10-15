@@ -1,26 +1,23 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 
-// Parks version is much leaner:
-export async function getStaticPaths() {
-    const parks = await getCollection('parks'); // Only fetches parks
-    return parks.map((park) => ({
-        params: { slug: park.id },
-        props: { park },
-    }));
+// 1. Enable prerender if you want them static, OR remove getStaticPaths() for true SSR route handling:
+export const prerender = false; // Set to false since you are running an SSR Node server
+
+// 2. Grab the slug directly from the request parameters at runtime
+const { slug } = Astro.params;
+
+const parks = await getCollection('parks');
+const park = parks.find((p) => p.id === slug);
+
+if (!park) {
+    return Astro.redirect('/404');
 }
 
-type Props = {
-    park: CollectionEntry<'parks'>; // Typed strictly to the parks collection
-};
-
-const { park } = Astro.props;
 const { Content } = await render(park);
 ---
 
 <BlogPost {...park.data}>
     <Content />
 </BlogPost>
-
-

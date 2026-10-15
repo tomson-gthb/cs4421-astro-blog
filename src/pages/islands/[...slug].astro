@@ -1,23 +1,20 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 
-export async function getStaticPaths() {
-    const items = await getCollection('islands');
-    return items.map((item) => ({
-        params: { slug: item.id },
-        props: { item },
-    }));
+export const prerender = false;
+
+const { slug } = Astro.params;
+const islands = await getCollection('islands');
+const island = islands.find((i) => i.id === slug);
+
+if (!island) {
+    return Astro.redirect('/404');
 }
 
-type Props = {
-    item: CollectionEntry<'islands'>;
-};
-
-const { item } = Astro.props;
-const { Content } = await render(item);
+const { Content } = await render(island);
 ---
 
-<BlogPost {...item.data}>
+<BlogPost {...island.data}>
     <Content />
 </BlogPost>

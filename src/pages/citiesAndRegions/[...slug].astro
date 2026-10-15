@@ -1,23 +1,20 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 
-export async function getStaticPaths() {
-    const items = await getCollection('citiesAndRegions');
-    return items.map((item) => ({
-        params: { slug: item.id },
-        props: { item },
-    }));
+export const prerender = false;
+
+const { slug } = Astro.params;
+const cities = await getCollection('citiesAndRegions');
+const city = cities.find((c) => c.id === slug);
+
+if (!city) {
+    return Astro.redirect('/404');
 }
 
-type Props = {
-    item: CollectionEntry<'citiesAndRegions'>;
-};
-
-const { item } = Astro.props;
-const { Content } = await render(item);
+const { Content } = await render(city);
 ---
 
-<BlogPost {...item.data}>
+<BlogPost {...city.data}>
     <Content />
 </BlogPost>
