@@ -4,6 +4,37 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
+//this is for ecs stack
+
+import { Construct } from 'constructs';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ecsp from 'aws-cdk-lib/aws-ecs-patterns';
+import * as ecr from 'aws-cdk-lib/aws-ecr'; // Make sure to import ECR
+
+export class HelloEcsStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    // 1. Look up your existing ECR repository
+    const repository = ecr.Repository.fromRepositoryName(this, 'AstroRepo', 'astro-blog-repository');
+
+    new ecsp.ApplicationLoadBalancedFargateService(this, 'MyWebServer', {
+      taskImageOptions: {
+        // 2. Use your custom ECR image and version tag
+        image: ecs.ContainerImage.fromEcrRepository(repository, 'v1.0.0'),
+        // 3. Set your Astro port
+        containerPort: 4321,
+      },
+      publicLoadBalancer: true,
+    });
+  }
+}
+
+
+
+
+// this is static site stack.
+
 export class StaticSiteStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);

@@ -1,8 +1,18 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib/core';
-import { StaticSiteStack} from '../lib/hello-cdk-stack';
+import { HelloEcsStack, StaticSiteStack } from '../lib/hello-cdk-stack';
+
 
 const app = new cdk.App();
+
+
+// Instantiate the ECS stack for  SSR container blog
+new HelloEcsStack(app, 'HelloEcsStack', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+});
+
+
+
 new StaticSiteStack(app, 'HelloCdkStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
@@ -14,7 +24,7 @@ new StaticSiteStack(app, 'HelloCdkStack', {
 
   /* Uncomment the next line if you know exactly what Account and Region you
    * want to deploy the stack to. */
-   env: { account: '239377167392', region: 'us-east-1' },
+   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
