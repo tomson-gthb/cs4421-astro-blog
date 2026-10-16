@@ -1,7 +1,12 @@
-import { defineConfig } from 'vitest/config';
 
-export default defineConfig({
+
+/// <reference types="vitest" />
+import { getViteConfig } from 'astro/config';
+
+export default getViteConfig({
   test: {
-    exclude: ['hello-cdk/**', 'node_modules/**']
+    environment: 'node',
+    exclude: ['hello-cdk/**', 'node_modules/**'],
   },
 });
+

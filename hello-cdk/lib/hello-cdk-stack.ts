@@ -12,7 +12,7 @@ export class HelloEcsStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'AstroVpc', { maxAzs: 2 });
     const cluster = new ecs.Cluster(this, 'AstroCluster', { vpc });
 
-    const repository = ecr.Repository.fromRepositoryName(
+    const repo = ecr.Repository.fromRepositoryName(
       this,
       'AstroRepo',
       'astro-blog-repository'
@@ -24,11 +24,12 @@ export class HelloEcsStack extends cdk.Stack {
     });
 
     const container = taskDef.addContainer('AstroContainer', {
-      image: ecs.ContainerImage.fromEcrRepository(repository, 'v1.0.0'),
+      image: ecs.ContainerImage.fromEcrRepository(repo, 'latest'),
       logging: ecs.LogDriver.awsLogs({ streamPrefix: 'astro' }),
       environment: {
         HOST: '0.0.0.0',
         PORT: '4321',
+	OPENWEATHER_API_KEY: process.env.OPENWEATHER_API_KEY || '',
       },
     });
 
@@ -50,8 +51,7 @@ export class HelloEcsStack extends cdk.Stack {
     const listener = alb.addListener('HttpListener', {
       port: 80,
     });
-
-    listener.addTargets('AstroTargets', {
+    const targetGroup = listener.addTargets('AstroTargets', {
       port: 4321,
       protocol: elbv2.ApplicationProtocol.HTTP,
       targets: [
@@ -72,6 +72,7 @@ export class HelloEcsStack extends cdk.Stack {
       },
     });
 
+
     service.connections.allowFrom(
       alb,
       ec2.Port.tcp(4321),
@@ -80,7 +81,65 @@ export class HelloEcsStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'BlogURL', {
       value: `http://${alb.loadBalancerDnsName}`,
-      description: 'Public URL for the Astro SSR blog',
     });
   }
 }
+
+
+
+// this is static site stack.
+/*
+export class StaticSiteStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const siteBucket = new s3.Bucket(this, 'SiteBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    // CloudFront Function to append index.html to clean Astro directory URLs
+    const rewriteFunction = new cloudfront.Function(this, 'RewriteFunction', {
+      code: cloudfront.FunctionCode.fromInline(`
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+          
+          // Check whether the URI is missing a file extension.
+          if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+          } else if (!uri.includes('.')) {
+            request.uri += '/index.html';
+          }
+          
+          return request;
+        }
+      `),
+    });
+
+
+    const distribution = new cloudfront.Distribution(this, 'SiteDistribution', {
+      defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
+	functionAssociations: [{
+          function: rewriteFunction,
+          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        }],
+	},
+      defaultRootObject: 'index.html',
+    });
+   
+     //this is for solving site url visibility after deployment
+    new cdk.CfnOutput(this, 'AstroSiteUrl', {
+      value: distribution.distributionDomainName,
+      description: 'The public URL of your Astro static site',
+    });
+
+  new s3deploy.BucketDeployment(this, 'DeploySite', {
+    sources: [s3deploy.Source.asset('./../dist')],
+    destinationBucket: siteBucket,
+    distribution,
+    distributionPaths: ['/*'], // Automatic CloudFront CDN cache invalidation!
+  });
+  }
+}
+*/

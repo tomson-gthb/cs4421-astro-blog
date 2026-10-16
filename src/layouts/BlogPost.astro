@@ -5,6 +5,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import WeatherCard from '../components/WeatherCard.astro'; // <--- ADD THIS LINE for weather 
 
 type Props = {
     title: string;
@@ -12,9 +13,10 @@ type Props = {
     pubDate?: Date;
     updatedDate?: Date;
     heroImage?: ImageMetadata;
+    showWeather?: boolean; // <--- Add this for solving weather problem in sports
 };
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate,showWeather = true, heroImage } = Astro.props;
 ---
 <html lang="en">
 	<head>
@@ -85,7 +87,8 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			                            )
 			                        }
 			                        <h1>{title}</h1>
-			                        <hr />
+						<hr />
+						{showWeather && <WeatherCard location={title} />}
 			                    </div>
 			                    <slot />
 			                </div>

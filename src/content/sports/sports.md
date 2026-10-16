@@ -2,6 +2,7 @@
 heroImage: "./pictures/MASHABIKI-1.jpg"
 title: 'Sports'
 description: 'Explore Sports in Tanzania.'
+showWeather: false   # <--- Add this line here to not agree the layout of weather app
 ---
 
 Culture & Banter
