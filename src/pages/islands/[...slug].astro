@@ -1,0 +1,20 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const islands = await getCollection('islands');
+const island = islands.find((i) => i.id === slug);
+
+if (!island) {
+    return Astro.redirect('/404');
+}
+
+const { Content } = await render(island);
+---
+
+<BlogPost {...island.data}>
+    <Content />
+</BlogPost>

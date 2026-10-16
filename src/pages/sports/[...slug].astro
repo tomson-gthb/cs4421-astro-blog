@@ -1,0 +1,20 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const sports = await getCollection('sports');
+const sport = sports.find((s) => s.id === slug);
+
+if (!sport) {
+    return Astro.redirect('/404');
+}
+
+const { Content } = await render(sport);
+---
+
+<BlogPost {...sport.data}>
+    <Content />
+</BlogPost>

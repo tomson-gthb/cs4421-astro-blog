@@ -1,0 +1,20 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+const cities = await getCollection('citiesAndRegions');
+const city = cities.find((c) => c.id === slug);
+
+if (!city) {
+    return Astro.redirect('/404');
+}
+
+const { Content } = await render(city);
+---
+
+<BlogPost {...city.data}>
+    <Content />
+</BlogPost>
