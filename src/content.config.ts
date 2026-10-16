@@ -39,6 +39,7 @@ const sports = defineCollection({
             title: z.string(),
             description: z.string().optional(),
             heroImage: z.optional(image()),
+	    showWeather: z.boolean().optional(),
         }),
 });
 
