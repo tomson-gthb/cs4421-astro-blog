@@ -24,7 +24,7 @@ export class HelloEcsStack extends cdk.Stack {
     });
 
     const container = taskDef.addContainer('AstroContainer', {
-      image: ecs.ContainerImage.fromEcrRepository(repo, 'latest'),
+      image: ecs.ContainerImage.fromEcrRepository(repo, 'v1.0.0'),
       logging: ecs.LogDriver.awsLogs({ streamPrefix: 'astro' }),
       environment: {
         HOST: '0.0.0.0',
