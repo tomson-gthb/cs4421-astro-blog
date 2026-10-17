@@ -33,8 +33,9 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: astro-blog-repository
           IMAGE_TAG: v1.0.0
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build --build-arg OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Install Project & CDK Dependencies
@@ -44,3 +45,5 @@ jobs:
       - name: Deploy Infrastructure & ECS Service with AWS CDK
         working-directory: ./hello-cdk
         run: npx cdk deploy HelloEcsStack --require-approval never
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
