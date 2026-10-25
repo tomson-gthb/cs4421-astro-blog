@@ -4,12 +4,13 @@ interface Props {
 }
 
 const { location } = Astro.props;
-const apiKey = import.meta.env.OPENWEATHER_API_KEY;
 
-// Dictionary mapping your exact park/island/city titles to precise lat/lon coordinates
+// Fix 1: Switch from build-time import.meta.env to dynamic runtime process.env
+const apiKey = process.env.OPENWEATHER_API_KEY;
+
 const coordinatesMap: Record<string, { lat: number; lon: number }> = {
   // Parks
-  "Serengeti": { lat: -2.3333, lon: 34.8333 },   // Seronera area
+  "Serengeti": { lat: -2.3333, lon: 34.8333 },
   "Kilimanjaro": { lat: -3.3500, lon: 37.3333 },
   "Ruaha": { lat: -7.5000, lon: 35.0000 },
   "Tarangire": { lat: -3.8333, lon: 36.0000 },
@@ -31,20 +32,23 @@ const coordinatesMap: Record<string, { lat: number; lon: number }> = {
   "Tanga": { lat: -5.0689, lon: 39.1001 }
 };
 
-// Default fallback (e.g., Arusha if location is not found)
-const coords = coordinatesMap[location] || { lat: -3.3869, lon: 36.6830 };
+// Fix 2: Search for a keyword within the layout title string so "Welcome to Pemba" matches "Pemba"
+const matchedKey = Object.keys(coordinatesMap).find(key => 
+  location.toLowerCase().includes(key.toLowerCase())
+);
+const coords = matchedKey ? coordinatesMap[matchedKey] : coordinatesMap["Arusha"];
 
 let weatherData = null;
 let error = null;
 
 if (!apiKey) {
   error = 'Weather API key configuration missing';
-  console.warn("--- WEATHER WARNING --- OPENWEATHER_API_KEY is not defined in your .env file!");
+  console.warn("--- WEATHER WARNING --- OPENWEATHER_API_KEY is not defined in your environment runtime variables!");
 } else {
   try {
+    // Fix 3: Rebuilt path with correct api endpoints, fully structured template literals, and https scheme
     const response = await fetch(
-        `https://openweathermap.org{coords.lat}&lon=${coords.lon}&units=metric&appid=${apiKey}`
-
+      `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&units=metric&appid=${apiKey}`
     );
 
     if (!response.ok) {
@@ -53,13 +57,12 @@ if (!apiKey) {
     }
 
     weatherData = await response.json();
-  } catch (e:unknown) {
-   const errorMessage = e instanceof Error ? e.message : 'Unknown network failure';
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : 'Unknown network failure';
     console.error("--- WEATHER FETCH FAILED ---", errorMessage);
     error = 'Weather currently unavailable';
   }
 }
-
 /*
 try {
   // Fetch using exact latitude and longitude instead of a text query string
