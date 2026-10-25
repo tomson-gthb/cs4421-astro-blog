@@ -53,8 +53,9 @@ if (!apiKey) {
     }
 
     weatherData = await response.json();
-  } catch (e: any) {
-    console.error("--- WEATHER FETCH FAILED ---", e.message);
+  } catch (e:unknown) {
+   const errorMessage = e instanceof Error ? e.message : 'Unknown network failure';
+    console.error("--- WEATHER FETCH FAILED ---", errorMessage);
     error = 'Weather currently unavailable';
   }
 }
