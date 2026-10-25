@@ -6,7 +6,7 @@ RUN npm ci
 COPY . .
 
 # Accept the API key as a build argument and set it as an env variable for the build step
-ARG OPENWEATHER_API_KEY
+ARG OPENWEATHER_API_KEY="RUNTIME_PLACEHOLDER"
 ENV OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY
 
 RUN npm run build

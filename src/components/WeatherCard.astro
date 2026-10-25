@@ -37,6 +37,30 @@ const coords = coordinatesMap[location] || { lat: -3.3869, lon: 36.6830 };
 let weatherData = null;
 let error = null;
 
+if (!apiKey) {
+  error = 'Weather API key configuration missing';
+  console.warn("--- WEATHER WARNING --- OPENWEATHER_API_KEY is not defined in your .env file!");
+} else {
+  try {
+    const response = await fetch(
+        `https://openweathermap.org{coords.lat}&lon=${coords.lon}&units=metric&appid=${apiKey}`
+
+    );
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`API Error Status ${response.status}: ${errorBody}`);
+    }
+
+    weatherData = await response.json();
+  } catch (e:unknown) {
+   const errorMessage = e instanceof Error ? e.message : 'Unknown network failure';
+    console.error("--- WEATHER FETCH FAILED ---", errorMessage);
+    error = 'Weather currently unavailable';
+  }
+}
+
+/*
 try {
   // Fetch using exact latitude and longitude instead of a text query string
   const response = await fetch(
@@ -50,7 +74,8 @@ try {
   weatherData = await response.json();
 } catch {
   error = 'Weather currently unavailable';
-}
+  }
+*/
 ---
 
 <div class="weather-card">
