@@ -1,11 +1,13 @@
 ---
+export const prerender = false; // Ensures your dynamic SSR layout executes live on the container runner
+
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import WeatherCard from '../components/WeatherCard.astro'; // <--- ADD THIS LINE for weather 
+import WeatherCard from '../components/WeatherCard.astro';
 
 type Props = {
     title: string;
@@ -13,10 +15,10 @@ type Props = {
     pubDate?: Date;
     updatedDate?: Date;
     heroImage?: ImageMetadata;
-    showWeather?: boolean; // <--- Add this for solving weather problem in sports
+    showWeather?: boolean;
 };
 
-const { title, description, pubDate, updatedDate,showWeather = true, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, showWeather = true, heroImage } = Astro.props;
 ---
 <html lang="en">
 	<head>
@@ -33,7 +35,7 @@ const { title, description, pubDate, updatedDate,showWeather = true, heroImage }
 			.hero-image img {
 				display: block;
 				margin: 0 auto;
-				object-fit: cover; /* This automatically crops tall photos to fit nicely */
+				object-fit: cover;
 				border-radius: 12px;
 				box-shadow: var(--box-shadow);
 			}
@@ -60,6 +62,15 @@ const { title, description, pubDate, updatedDate,showWeather = true, heroImage }
 			.last-updated-on {
 				font-style: italic;
 			}
+			.comments-section {
+				margin-top: 4em;
+				border-top: 1px solid #e0e0e0;
+				padding-top: 2em;
+			}
+			.comments-section h3 {
+				margin-bottom: 1.5rem;
+				color: #333;
+			}
 		</style>
 	</head>
 
@@ -70,31 +81,63 @@ const { title, description, pubDate, updatedDate,showWeather = true, heroImage }
 				<div class="hero-image">
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
 				</div>
-					<div class="prose">
-			                    <div class="title">
-			                        {
-			                            pubDate && (
-			                                <div class="date">
-			                                    <FormattedDate date={pubDate} />
-			                                    {
-			                                        updatedDate && (
-			                                            <div class="last-updated-on">
-			                                                Last updated on <FormattedDate date={updatedDate} />
-			                                            </div>
-			                                        )
-			                                    }
-			                                </div>
-			                            )
-			                        }
-			                        <h1>{title}</h1>
+				<div class="prose">
+					<div class="title">
+						{
+							pubDate && (
+								<div class="date">
+									<FormattedDate date={pubDate} />
+									{
+										updatedDate && (
+											<div class="last-updated-on">
+												Last updated on <FormattedDate date={updatedDate} />
+											</div>
+										)
+									}
+								</div>
+							)
+						}
+						<h1>{title}</h1>
 						<hr />
 						{showWeather && <WeatherCard location={title} />}
-			                    </div>
-			                    <slot />
-			                </div>
-				
+					</div>
+					<slot />
+
+
+
+					<!-- 👇 USE NATIVE RAW HTML ENTRY PASSTHROUGH 👇 -->
+						<div class="comments-section" style="margin-top: 4em; border-top: 1px solid #e0e0e0; padding-top: 2em;">
+						    <h3>Share Your Safari Experience! 🦁</h3>
+
+						    <div id="remark42"></div>
+
+						    <!-- Using is:inline overrides layout asset sanitization chains -->
+						    <script is:inline>
+						        var remark_config = {
+						            host: 'https://demo.remark42.com', // 👈 CORRECTED TARGET HOST
+						            site_id: 'remark',
+						            components: ['embed'],
+						            url: window.location.origin + window.location.pathname,
+						            max_shown_comments: 15,
+						            theme: 'light',
+						            simple_view: true
+						        };
+		
+						        // Dynamic script loader to inject the Remark42 source directly into the DOM
+						        (function() {
+						            var d = document, s = d.createElement('script');
+						            s.src = 'https://demo.remark42.com/web/embed.js'; // 👈 CORRECTED SOURCE ENDPOINT
+						            s.defer = true;
+						            s.async = true;
+						            (d.head || d.body).appendChild(s);
+						        })();
+						    </script>
+						</div>
+
+				</div>
 			</article>
 		</main>
 		<Footer />
 	</body>
 </html>
+
