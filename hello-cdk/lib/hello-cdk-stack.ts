@@ -13,11 +13,11 @@ export class HelloEcsStack extends cdk.Stack {
     const cluster = new ecs.Cluster(this, 'AstroCluster', { vpc });
 
     
-    const repo = new ecr.Repository(this, 'AstroRepo', {
-      repositoryName: 'astro-blog-repository',
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      emptyOnDelete: true,
-    });
+    const repo = ecr.Repository.fromRepositoryName(
+      this, 
+     'AstroRepo', 
+     'astro-blog-repository'
+    );
 
     const taskDef = new ecs.FargateTaskDefinition(this, 'AstroTask', {
       cpu: 256,
