@@ -3,6 +3,12 @@ name: Deploy SSR Blog to ECS via AWS CDK
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      fault_injection:
+        description: 'Set to true to inject a breaking configuration for SRE testing'
+        required: false
+        default: 'false'
 
 jobs:
   deploy:
@@ -32,8 +38,8 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: astro-blog-repository
-          IMAGE_TAG: v1.0.0
-          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          IMAGE_TAG: ${{ github.sha }}
+          OPENWEATHER_API_KEY: ${{ github.event.inputs.fault_injection == 'true' && 'FAIL_INJECTION_TRIGGERED' || secrets.OPENWEATHER_API_KEY }}
         run: |
           docker build --build-arg OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -44,6 +50,7 @@ jobs:
 
       - name: Deploy Infrastructure & ECS Service with AWS CDK
         working-directory: ./hello-cdk
-        run: npx cdk deploy HelloEcsStack --require-approval never
+        run: npx cdk deploy HelloEcsStack --require-approval never --context imageTag=${{ github.sha }}
         env:
-          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          OPENWEATHER_API_KEY: ${{ github.event.inputs.fault_injection == 'true' && 'FAIL_INJECTION_TRIGGERED' || secrets.OPENWEATHER_API_KEY }}
+
