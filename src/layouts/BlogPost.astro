@@ -105,30 +105,28 @@ const { title, description, pubDate, updatedDate, showWeather = true, heroImage 
 						<h3>Share Your Safari Experience! 🦁</h3>
 
 						<div id="remark42"></div>
+							<script is:inline>
+							    window.remark_config = {
+							        host: 'https://remark42.com',
+							        site_id: 'remark',
+							        components: ['embed'],
+							        // 👇 CLEAN PRODUCTION DOMAIN FALLBACK FORMAT 👇
+							        url: 'https://jjtsafaritours.com' + window.location.pathname,
+							        max_shown_comments: 15,
+							        theme: 'light',
+							        simple_view: true
+							    };
 
-						<!-- is:inline keeps script intact while passing compiler syntax controls -->
-						<script is:inline>
-							// Binds the global configuration directly onto window context to clear unused vars
-							window.remark_config = {
-								host: 'https://remark42.com',
-								site_id: 'remark',
-								components: ['embed'],
-								url: window.location.origin + window.location.pathname,
-								max_shown_comments: 15,
-								theme: 'light',
-								simple_view: true
-							};
-	
-							// Type-safe client execution function using modern block-scoped constants
-							(function() {
-								const d = document;
-								const s = d.createElement('script');
-								s.src = 'https://remark42.com/web/embed.js';
-								s.defer = true;
-								s.async = true;
-								(d.head || d.body).appendChild(s);
-							})();
-						</script>
+							    (function() {
+							        const d = document;
+							        const s = d.createElement('script');
+							        s.src = 'https://remark42.com/web/embed.js';
+							        s.defer = true;
+							        s.async = true;
+							        (d.head || d.body).appendChild(s);
+							    })();
+							</script>
+
 					</div>
 				</div>
 			</article>
