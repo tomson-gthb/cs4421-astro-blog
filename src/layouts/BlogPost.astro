@@ -101,32 +101,45 @@ const { title, description, pubDate, updatedDate, showWeather = true, heroImage 
 					</div>
 					<slot />
 
+					<!-- 👇 OFFICIAL LINT-COMPLIANT REMARK42 EMBED ENGINE 👇 -->
 					<div class="comments-section" style="margin-top: 4em; border-top: 1px solid #e0e0e0; padding-top: 2em;">
 						<h3>Share Your Safari Experience! 🦁</h3>
 
+						<!-- Target element where Remark42 will render the frame -->
 						<div id="remark42"></div>
-							<script is:inline>
-							    window.remark_config = {
-							        host: 'https://remark42.com',
-							        site_id: 'remark',
-							        components: ['embed'],
-							        // 👇 CLEAN PRODUCTION DOMAIN FALLBACK FORMAT 👇
-							        url: 'https://jjtsafaritours.com' + window.location.pathname,
-							        max_shown_comments: 15,
-							        theme: 'light',
-							        simple_view: true
-							    };
 
-							    (function() {
-							        const d = document;
-							        const s = d.createElement('script');
-							        s.src = 'https://remark42.com/web/embed.js';
-							        s.defer = true;
-							        s.async = true;
-							        (d.head || d.body).appendChild(s);
-							    })();
-							</script>
+						<!-- is:inline allows the global variable to bypass Astro bundling sanitization -->
+						<script is:inline>
+							window.remark_config = {
+								host: 'https://remark42.com',
+								site_id: 'remark',
+								components: ['embed'],
+								url: 'https://jjtsafaritours.com' + window.location.pathname,
+								max_shown_comments: 15,
+								theme: 'light',
+								simple_view: true
+							};
 
+							// Cleaned up, fully lint-compliant asynchronous module loading block
+							(function (modules, doc) {
+								for (let i = 0; i < modules.length; i++) {
+									const scriptEl = doc.createElement("script");
+									let extension = ".js";
+									const targetDom = doc.head || doc.body;
+									
+									if ("noModule" in scriptEl) {
+										scriptEl.type = "module";
+										extension = ".mjs";
+									} else {
+										scriptEl.async = true;
+									}
+									
+									scriptEl.defer = true;
+									scriptEl.src = window.remark_config.host + "/web/" + modules[i] + extension;
+									targetDom.appendChild(scriptEl);
+								}
+							})(window.remark_config.components || ["embed"], document);
+						</script>
 					</div>
 				</div>
 			</article>
