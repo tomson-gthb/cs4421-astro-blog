@@ -9,14 +9,29 @@ export class HelloEcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'AstroVpc', { maxAzs: 2 });
+    const vpc = new ec2.Vpc(this, 'AstroVpc', { 
+      maxAzs: 2,
+      natGateways: 0, 
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'public',
+          subnetType: ec2.SubnetType.PUBLIC, 
+        }
+      ]
+    });
+
     const cluster = new ecs.Cluster(this, 'AstroCluster', { vpc });
 
-    
     const repo = new ecr.Repository(this, 'AstroRepo', {
       repositoryName: 'astro-blog-repository',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       emptyOnDelete: true,
+    });
+
+    repo.addLifecycleRule({
+      maxImageCount: 3,
+      description: 'Retain only the 3 most recent container versions to optimize AWS storage expenses',
     });
 
     const taskDef = new ecs.FargateTaskDefinition(this, 'AstroTask', {
@@ -24,7 +39,6 @@ export class HelloEcsStack extends cdk.Stack {
       memoryLimitMiB: 512,
     });
 
-  
     repo.grantPull(taskDef.obtainExecutionRole());
 
     const imageTag = this.node.tryGetContext('imageTag') || 'latest';
@@ -44,12 +58,12 @@ export class HelloEcsStack extends cdk.Stack {
       cluster,
       taskDefinition: taskDef,
       desiredCount: 1,
-      assignPublicIp: true,
+      assignPublicIp: true, // Required for public subnets so tasks can fetch packages
       healthCheckGracePeriod: cdk.Duration.seconds(60),
- 
       minHealthyPercent: 100, 
       maxHealthyPercent: 200,     
       circuitBreaker: { rollback: true },
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
     });
 
     const alb = new elbv2.ApplicationLoadBalancer(this, 'AstroALB', {
