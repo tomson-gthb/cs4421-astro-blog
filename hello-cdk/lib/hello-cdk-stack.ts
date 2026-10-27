@@ -11,12 +11,12 @@ export class HelloEcsStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'AstroVpc', { 
       maxAzs: 2,
-      natGateways: 0, // Forces zero NAT Gateways to stop the overnight cost leaks
+      natGateways: 0, // Keeps NAT Gateways completely disabled to save money
       subnetConfiguration: [
         {
           cidrMask: 24,
-          name: 'public',
-          subnetType: ec2.SubnetType.PUBLIC, // Direct public internet routing
+          name: 'public-cost-optimized', // Tweaked name forces a clean resource generation path
+          subnetType: ec2.SubnetType.PUBLIC, 
         }
       ]
     });
