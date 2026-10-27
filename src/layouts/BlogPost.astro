@@ -101,39 +101,36 @@ const { title, description, pubDate, updatedDate, showWeather = true, heroImage 
 					</div>
 					<slot />
 
-					<!-- 👇 OFFICIAL LINT-COMPLIANT REMARK42 EMBED ENGINE 👇 -->
-					<div class="comments-section" style="margin-top: 4em; border-top: 1px solid #e0e0e0; padding-top: 2em;">
+				
+					<div class="comments-section">
 						<h3>Share Your Safari Experience! 🦁</h3>
 
-						<!-- Target element where Remark42 will render the frame -->
 						<div id="remark42"></div>
 
-						<!-- is:inline allows the global variable to bypass Astro bundling sanitization -->
 						<script is:inline>
 							window.remark_config = {
-								host: 'https://remark42.com',
+								host: 'https://demo.remark42.com',
 								site_id: 'remark',
 								components: ['embed'],
-								url: 'https://jjtsafaritours.com' + window.location.pathname,
+								url: window.location.origin + window.location.pathname,
 								max_shown_comments: 15,
 								theme: 'light',
 								simple_view: true
 							};
 
-							// Cleaned up, fully lint-compliant asynchronous module loading block
 							(function (modules, doc) {
 								for (let i = 0; i < modules.length; i++) {
 									const scriptEl = doc.createElement("script");
 									let extension = ".js";
 									const targetDom = doc.head || doc.body;
-									
+
 									if ("noModule" in scriptEl) {
 										scriptEl.type = "module";
 										extension = ".mjs";
 									} else {
 										scriptEl.async = true;
 									}
-									
+
 									scriptEl.defer = true;
 									scriptEl.src = window.remark_config.host + "/web/" + modules[i] + extension;
 									targetDom.appendChild(scriptEl);
@@ -147,4 +144,3 @@ const { title, description, pubDate, updatedDate, showWeather = true, heroImage 
 		<Footer />
 	</body>
 </html>
-
