@@ -58,6 +58,42 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+			.author-card {
+				display: flex;
+				align-items: center;
+				gap: 1.5rem;
+				background: #f9f9f9;
+				border: 1px solid #e0e0e0;
+				border-radius: 8px;
+				padding: 1.5rem;
+				margin-top: 4em;
+			}
+			.author-profile-wrapper {
+				width: 75px;
+				height: 75px;
+				border-radius: 50%;
+				overflow: hidden;
+				border: 2px solid #e0e0e0;
+				box-shadow: var(--box-shadow);
+				flex-shrink: 0;
+			}
+			.author-profile-img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				display: block;
+			}
+			.author-info h4 {
+				margin: 0 0 0.25rem 0;
+				color: #333;
+				font-size: 1.15rem;
+			}
+			.author-info p {
+				margin: 0;
+				color: #666;
+				font-size: 0.95rem;
+				line-height: 1.4;
+			}
 		</style>
 	</head>
 
@@ -68,30 +104,44 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				<div class="hero-image">
 					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
 				</div>
-					<div class="prose">
-			                    <div class="title">
-			                        {
-			                            pubDate && (
-			                                <div class="date">
-			                                    <FormattedDate date={pubDate} />
-			                                    {
-			                                        updatedDate && (
-			                                            <div class="last-updated-on">
-			                                                Last updated on <FormattedDate date={updatedDate} />
-			                                            </div>
-			                                        )
-			                                    }
-			                                </div>
-			                            )
-			                        }
-			                        <h1>{title}</h1>
-			                        <hr />
-			                    </div>
-			                    <slot />
-			                </div>
-				
+				<div class="prose">
+					<div class="title">
+						{
+							pubDate && (
+								<div class="date">
+									<FormattedDate date={pubDate} />
+									{
+										updatedDate && (
+											<div class="last-updated-on">
+												Last updated on <FormattedDate date={updatedDate} />
+											</div>
+										)
+									}
+								</div>
+							)
+						}
+						<h1>{title}</h1>
+						<hr />
+					</div>
+					<slot />
+
+					<div class="author-card">
+						<div class="author-profile-wrapper">
+							<img 
+								src="/jjt.png" 
+								alt="jjt - Author Profile" 
+								class="author-profile-img"
+							/>
+						</div>
+						<div class="author-info">
+							<h4>Written by jjt</h4>
+							<p>DevOps Practitioner & Software Engineering student at the University of Limerick. Exploring cloud-native web architectures, automated CI/CD configurations, and SRE resilience controls.</p>
+						</div>
+					</div>
+				</div>
 			</article>
 		</main>
 		<Footer />
 	</body>
 </html>
+
